@@ -86,13 +86,31 @@ func _main(args []*string, domainName, accessKeyID, accessKeySecret string) (dom
 
 	describeDomainRecordsRequest := &alidns20150109.DescribeDomainRecordsRequest{
 		DomainName: tea.String(domainName),
-		PageSize: tea.Int64(10000),
+		PageNumber: tea.Int64(1),
+		PageSize:   tea.Int64(500),
 	}
+
 	runtime := &util.RuntimeOptions{}
 	resp, _err := client.DescribeDomainRecordsWithOptions(describeDomainRecordsRequest, runtime)
 	if _err != nil {
 		return nil, _err
 	}
+
+	// 由于aliyun-sdk PageSize最大只能支持500，因此需要查询第二页数据
+	describeDomainRecordsRequestPage2 := &alidns20150109.DescribeDomainRecordsRequest{
+		DomainName: tea.String(domainName),
+		PageNumber: tea.Int64(2),
+		PageSize:   tea.Int64(500),
+	}
+
+	runtimePage2 := &util.RuntimeOptions{}
+	respPage2, _err := client.DescribeDomainRecordsWithOptions(describeDomainRecordsRequestPage2, runtimePage2)
+	if _err != nil {
+		return nil, _err
+	}
+
+	// 数据合并
+	resp.Body.DomainRecords.Record = append(resp.Body.DomainRecords.Record, respPage2.Body.DomainRecords.Record...)
 
 	return resp.Body.DomainRecords.Record, _err
 }
