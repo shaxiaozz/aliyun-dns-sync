@@ -163,7 +163,6 @@ func InitFile(fileName string) (err error) {
 		}
 		defer file.Close()
 		fmt.Println(fileName, "文件已创建")
-		return err
 	} else {
 		fmt.Println("判断文件是否存在时出错：", err)
 		return err
