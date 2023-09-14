@@ -86,6 +86,7 @@ func _main(args []*string, domainName, accessKeyID, accessKeySecret string) (dom
 
 	describeDomainRecordsRequest := &alidns20150109.DescribeDomainRecordsRequest{
 		DomainName: tea.String(domainName),
+		PageSize: tea.Int64(10000),
 	}
 	runtime := &util.RuntimeOptions{}
 	resp, _err := client.DescribeDomainRecordsWithOptions(describeDomainRecordsRequest, runtime)
