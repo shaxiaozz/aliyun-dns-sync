@@ -76,7 +76,7 @@ func CreateClientWithSTS(accessKeyId *string, accessKeySecret *string, securityT
 	return _result, _err
 }
 
-func _main(args []*string, accessKeyID, accessKeySecret string) (domainRecordsdata []*alidns20150109.DescribeDomainRecordsResponseBodyDomainRecordsRecord, _err error) {
+func _main(args []*string, domainName, accessKeyID, accessKeySecret string) (domainRecordsdata []*alidns20150109.DescribeDomainRecordsResponseBodyDomainRecordsRecord, _err error) {
 	// 请确保代码运行环境设置了环境变量 ALIBABA_CLOUD_ACCESS_KEY_ID 和 ALIBABA_CLOUD_ACCESS_KEY_SECRET。
 	// 工程代码泄露可能会导致 AccessKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考，建议使用更安全的 STS 方式，更多鉴权访问方式请参见：https://help.aliyun.com/document_detail/378661.html
 	client, _err := CreateClient(tea.String(accessKeyID), tea.String(accessKeySecret))
@@ -85,7 +85,7 @@ func _main(args []*string, accessKeyID, accessKeySecret string) (domainRecordsda
 	}
 
 	describeDomainRecordsRequest := &alidns20150109.DescribeDomainRecordsRequest{
-		DomainName: tea.String("qiufeng.tech"),
+		DomainName: tea.String(domainName),
 	}
 	runtime := &util.RuntimeOptions{}
 	resp, _err := client.DescribeDomainRecordsWithOptions(describeDomainRecordsRequest, runtime)
@@ -226,10 +226,12 @@ func ExecCommand() (err error) {
 func main() {
 	// 定义命令行参数
 	var filePath string
+	var domainName string
 	var accessKeyID string
 	var accessKeySecret string
 
 	flag.StringVar(&filePath, "file", "", "文件路径")
+	flag.StringVar(&domainName, "domainname", "", "阿里云域名")
 	flag.StringVar(&accessKeyID, "accesskey-id", "", "Aliyun AccessKey ID")
 	flag.StringVar(&accessKeySecret, "accesskey-secret", "", "Aliyun AccessKey Secret")
 
@@ -255,7 +257,7 @@ func main() {
 	}
 
 	// 获取阿里云dns数据
-	domainRecordsdata, err := _main(tea.StringSlice(os.Args[1:]), accessKeyID, accessKeySecret)
+	domainRecordsdata, err := _main(tea.StringSlice(os.Args[1:]), domainName, accessKeyID, accessKeySecret)
 	if err != nil {
 		panic(err)
 	}
